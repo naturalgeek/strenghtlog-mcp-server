@@ -147,19 +147,29 @@ async def get_program(program_id: str, source: str = "user_programs") -> str:
         week_str = f" (Week {w.week})" if w.week else ""
         lines.append(f"\n## {w.name}{week_str}")
 
+        # Group sets by exercise, preserving order of first appearance
         exercises: dict[str, list] = {}
+        exercise_order: list[str] = []
         for s in w.sets:
             name = s.exercise_name or s.exercise_id
-            exercises.setdefault(name, []).append(s)
+            if name not in exercises:
+                exercise_order.append(name)
+                exercises[name] = []
+            exercises[name].append(s)
 
-        for ex_name, sets in exercises.items():
-            working = [s for s in sets if not s.is_warmup]
+        for ex_name in exercise_order:
+            sets = exercises[ex_name]
             warmup = [s for s in sets if s.is_warmup]
-            set_count = len(working)
-            reps = working[0].reps if working else 0
-            lines.append(f"  - {ex_name}: {set_count} x {reps}")
+            working = [s for s in sets if not s.is_warmup]
+
+            lines.append(f"  **{ex_name}**")
             if warmup:
-                lines.append(f"    (+ {len(warmup)} warmup sets)")
+                for s in warmup:
+                    w_str = f"{s.weight}kg x " if s.weight else ""
+                    lines.append(f"    - Warmup: {w_str}{s.reps} reps")
+            for s in working:
+                w_str = f"{s.weight}kg x " if s.weight else ""
+                lines.append(f"    - {w_str}{s.reps} reps")
 
     return "\n".join(lines)
 
