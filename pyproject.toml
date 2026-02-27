@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "strengthlog-mcp-server"
+version = "0.1.0"
+description = "MCP server for the StrengthLog workout tracker"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+    "mcp[cli]>=1.0.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+]
+
+[project.scripts]
+strengthlog-mcp = "strengthlog_mcp.server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
