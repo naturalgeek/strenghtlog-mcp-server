@@ -29,7 +29,7 @@ class FirebaseAuth:
         return datetime.now(timezone.utc) >= (self.token_expiry - timedelta(minutes=5))
 
     async def login(self, email: str, password: str) -> None:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30) as client:
             response = await client.post(
                 f"{FIREBASE_AUTH_URL}:signInWithPassword",
                 params={"key": FIREBASE_API_KEY},
@@ -52,7 +52,7 @@ class FirebaseAuth:
         if not self.refresh_token:
             raise AuthenticationError("No refresh token available")
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30) as client:
             response = await client.post(
                 "https://securetoken.googleapis.com/v1/token",
                 params={"key": FIREBASE_API_KEY},

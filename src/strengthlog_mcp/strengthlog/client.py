@@ -43,7 +43,7 @@ class StrengthLogClient:
     async def _request(self, method: str, path: str, **kwargs) -> dict:
         await self._ensure_authenticated()
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30) as client:
             response = await client.request(
                 method,
                 f"{FIRESTORE_BASE}{path}",
@@ -332,7 +332,7 @@ class StrengthLogClient:
         params = {}
         if fields:
             params["mask.fieldPaths"] = fields
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30) as client:
             response = await client.get(
                 f"{FIRESTORE_BASE}/{path}",
                 headers=self._auth.get_auth_header(),
@@ -361,7 +361,7 @@ class StrengthLogClient:
             if fields:
                 params["mask.fieldPaths"] = fields
 
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=30) as client:
                 response = await client.get(
                     f"{FIRESTORE_BASE}/{path}",
                     headers=self._auth.get_auth_header(),
